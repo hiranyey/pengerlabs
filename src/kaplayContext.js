@@ -1,31 +1,31 @@
 import kaplay from "kaplay";
-const DEBUG = import.meta.env.VITE_DEBUG=== 'true';
+const DEBUG = import.meta.env.VITE_DEBUG === 'true';
 const TILE_SIZE = 16;
 const kaplayContext = kaplay({
-    width:2*21*TILE_SIZE,
-    height:2*12*TILE_SIZE,
+    width: 2 * 21 * TILE_SIZE,
+    height: 2 * 12 * TILE_SIZE,
     debug: DEBUG,
     debugKey: "p",
-    scale:2.4,
+    scale: 2.4,
     background: [128, 232, 237],
     letterbox: true,
     global: false,
     touchToMouse: true,
-    buttons:{
-        up:{
-            keyboard: ["up", "w"],
+    buttons: {
+        up: {
+            keyboard: ["up", "w", "space"],
         },
-        down:{
-            keyboard: ["down", "s"],
-        },
-        left:{
+        left: {
             keyboard: ["left", "a"],
         },
-        right:{
+        right: {
             keyboard: ["right", "d"],
         },
-        a:{
-            keyboard: ["space", "enter"],
+        down: {
+            keyboard: ["down", "s"],
+        },
+        death: {
+            keyboard: ["shift"],
         },
     },
 })

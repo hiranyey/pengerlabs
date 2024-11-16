@@ -100,15 +100,15 @@
          "name":"Collison",
          "objects":[
                 {
-                 "height":47.6363636363637,
+                 "height":47.6364,
                  "id":3,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":63.6363636363636,
-                 "x":0.363636363636364,
-                 "y":143.818181818182
+                 "width":63.6364,
+                 "x":0.363636,
+                 "y":143.818
                 }, 
                 {
                  "height":16,
@@ -117,20 +117,20 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":48.5454545454546,
+                 "width":48.5455,
                  "x":128,
-                 "y":95.8181818181818
+                 "y":95.8182
                 }, 
                 {
-                 "height":48.1818181818182,
+                 "height":48.1818,
                  "id":9,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":64,
-                 "x":272.363636363636,
-                 "y":47.6363636363636
+                 "x":272.364,
+                 "y":47.6364
                 }, 
                 {
                  "height":48,
@@ -139,18 +139,73 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":16.5454545454545,
-                 "x":223.636363636364,
-                 "y":79.6363636363636
+                 "width":16.5455,
+                 "x":223.636,
+                 "y":79.6364
                 }],
          "opacity":1,
          "type":"objectgroup",
          "visible":false,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":6,
+         "name":"End",
+         "objects":[
+                {
+                 "height":31,
+                 "id":11,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":33,
+                 "x":300,
+                 "y":16.3333333333333
+                }, 
+                {
+                 "height":0,
+                 "id":12,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":288,
+                 "y":35.3333333333333
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":false,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":7,
+         "name":"Start",
+         "objects":[
+                {
+                 "height":16,
+                 "id":15,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":49.75,
+                 "x":2.5,
+                 "y":99.5
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":6,
- "nextobjectid":11,
+ "nextlayerid":8,
+ "nextobjectid":16,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
