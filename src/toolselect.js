@@ -1,7 +1,7 @@
 import { ASSETNAMES, SCENES, TOOLS } from "./assetLoader";
 
 
-const toolSelect = (k, appendObstacle, getObstacles) => {
+const toolSelect = (k, appendObstacle) => {
     const getToolArea = (tool) => {
         switch (tool) {
             case ASSETNAMES.spike:
@@ -81,12 +81,12 @@ const toolSelect = (k, appendObstacle, getObstacles) => {
                 text.scale = k.vec2(1);
                 text.color = k.rgb(0, 0, 0);
                 text.text = "Click to place " + tool;
+                items.forEach((item) => {
+                    if (item === toolSprite) return;
+                    item.destroy();
+                });
                 const u = k.onUpdate(() => {
-                    items.forEach((item) => {
-                        if (item === toolSprite) return;
-                        item.destroy();
-                    });
-                    toolSprite.z = TOOLS.length + 1;
+
                     toolSprite.pos = k.mousePos();
                 })
                 setTimeout(() => {

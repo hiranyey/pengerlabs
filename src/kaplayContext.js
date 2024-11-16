@@ -2,11 +2,11 @@ import kaplay from "kaplay";
 const DEBUG = import.meta.env.VITE_DEBUG === 'true';
 const TILE_SIZE = 16;
 const kaplayContext = kaplay({
-    width: 2 * 21 * TILE_SIZE,
+    width: 2 * 22 * TILE_SIZE,
     height: 2 * 12 * TILE_SIZE,
     debug: DEBUG,
     debugKey: "p",
-    scale: 2.4,
+    scale: 2.3,
     background: [128, 232, 237],
     letterbox: true,
     global: false,

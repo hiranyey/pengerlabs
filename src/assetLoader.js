@@ -18,6 +18,8 @@ const loadAssets = async (kaplay) => {
     await kaplay.loadSprite("arrow", "sprites/arrow.png");
     await kaplay.loadSprite("bow", "sprites/bow.png");
 
+    await kaplay.loadShaderURL("colorReplaceShader", null,"shaders/colorReplace.glsl");
+
     await kaplay.loadFont("mainfont", "fonts/penger.ttf");
 }
 
@@ -35,6 +37,7 @@ const ASSETNAMES = {
     arrow: "arrow",
     bow: "bow",
     mainfont: "mainfont",
+    colorReplaceShader: "colorReplaceShader",
 }
 const TOOLS = [ASSETNAMES.spike, ASSETNAMES.stair, ASSETNAMES.bow];
 export { ASSETNAMES,SCENES,TOOLS };
