@@ -14,7 +14,7 @@ const gameLoop = (k, getObstacles) => {
             recorder.download("recording.mp4");
         }, time);
     }
-    
+
     const createGhost = (k, player) => {
         const ghost = k.add([
             k.sprite(ASSETNAMES.penger),
@@ -27,7 +27,7 @@ const gameLoop = (k, getObstacles) => {
             k.body(),
         ]);
         ghost.play("dead");
-        k.shake(30);
+        k.shake(20);
         ghost.onCollide("death", () => {
             ghost.destroy();
         })
@@ -88,7 +88,17 @@ const gameLoop = (k, getObstacles) => {
         createColliders(map, k);
         const startCollider = map.layers[6].objects[0];
         getObstacles().forEach((obstacle) => {
-            k.add(obstacle);
+            if (obstacle.length > 1) {
+                obstacle.forEach((o) => {
+                    k.add(o);
+                })
+                return;
+            } else {
+                k.add(obstacle);
+            }
+            if (obstacle.is(ASSETNAMES.cutter)) {
+                obstacle.play("run");
+            }
         });
         const player = k.add([
             k.pos(0, 0),
@@ -102,13 +112,13 @@ const gameLoop = (k, getObstacles) => {
             k.anchor("center"),
             k.body(),
             k.animate(),
-            k.shader(ASSETNAMES.colorReplaceShader, ()=>({
-                in_r:143 / 255,
+            k.shader(ASSETNAMES.colorReplaceShader, () => ({
+                in_r: 143 / 255,
                 in_g: 195 / 255,
                 in_b: 216 / 255,
-                out_r : 1.0,
-                out_g : 0.0,
-                out_b : 1.0,
+                out_r: 128 / 255,
+                out_g: 32 / 255,
+                out_b: 16 / 255,
             })),
             "player",
         ])
@@ -169,6 +179,11 @@ const gameLoop = (k, getObstacles) => {
                 setPlayerPosition(startCollider, player);
             }
         });
+        k.onCollide("player", ASSETNAMES.cutter, async (player, cutter) => {
+            player.pos.x = cutter.pos.x - cutter.width / 2
+            createGhost(k, player);
+            setPlayerPosition(startCollider, player);
+        });
 
         k.onCollide("player", ASSETNAMES.stair, (player, stair) => {
             player.pos.x = stair.pos.x;
@@ -180,10 +195,30 @@ const gameLoop = (k, getObstacles) => {
             player.unuse("body");
             player.usingStair = stair.id;
         });
+        k.onCollide("player", "arrowCollider", (player, arrow) => {
+            createGhost(k, player);
+            setPlayerPosition(startCollider, player);
+        });
 
         k.onCollide("player", "end", (player, end) => {
             k.go("toolselect");
         })
+        k.loop(2, () => {
+            k.get(ASSETNAMES.surikenThrower).forEach((arrow) => {
+                arrow.play("run");
+                setTimeout(() => {
+                    const suriken = k.add([
+                        k.pos(arrow.pos.x, arrow.pos.y),
+                        k.sprite(ASSETNAMES.suriken),
+                        k.area(),
+                        k.scale(0.5),
+                        k.anchor("center"),
+                        "arrowCollider",
+                    ]);
+                    suriken.play("run");
+                }, 400);
+            })
+        });
 
         k.onUpdate(() => {
             if (player.is("body") && player.isGrounded()) {
@@ -196,6 +231,12 @@ const gameLoop = (k, getObstacles) => {
             if (stair && player.usingStair && (player.pos.y < stair.pos.y - stair.height || player.pos.y > stair.pos.y + stair.height)) {
                 player.use(k.body());
                 player.usingStair = false;
+            }
+            const arrowCollider = k.get("arrowCollider");
+            if (arrowCollider.length > 0) {
+                arrowCollider.forEach((arrow) => {
+                    arrow.move(-200, 0);
+                })
             }
 
         })
