@@ -62,40 +62,41 @@ const toolSelect = (k, appendObstacle, room) => {
                 offset: k.vec2(colliders[1].x / 2, -colliders[1].y),
             })
             const first = k.add([
-                k.pos(k.width() / 3 + (i - 1) * 80, k.height() / 2),
+                k.pos(k.width() / 2.5 + (i - 1) * 80, k.height() / 2),
                 firstArea,
                 k.body({ isStatic: true }),
                 k.scale(1.5),
                 k.anchor("center"),
-                tool + "area"
+                tool + "area",
+                "obstacle",
             ])
             const second = k.add([
                 k.sprite(tool),
-                k.pos(k.width() / 3 + (i - 1) * 80, k.height() / 2),
+                k.pos(k.width() / 2.5 + (i - 1) * 80, k.height() / 2),
                 secondArea,
                 k.body({ isStatic: true }),
                 k.scale(1.5),
                 k.anchor("center"),
                 tool,
+                "obstacle",
             ]);
             return [first, second];
         } else {
             return k.add([
                 k.sprite(tool),
-                k.pos(k.width() / 3 + (i - 1) * 80, k.height() / 2),
+                k.pos(k.width() / 2.5 + (i - 1) * 80, k.height() / 2),
                 k.area(getToolArea(tool)),
                 k.rotate(getToolRotation(tool).angle),
                 k.body({ isStatic: true }),
                 k.scale(1.5),
                 k.anchor("center"),
                 tool,
+                "obstacle",
             ]);
         }
-
     }
 
     k.scene(SCENES.toolselect, () => {
-
         k.add([
             k.sprite("map"),
             k.pos(0, 0),
@@ -114,7 +115,7 @@ const toolSelect = (k, appendObstacle, room) => {
         TOOLS.forEach(async (tool, i) => {
             const greybox = k.add([
                 k.rect(64, 64),
-                k.pos(k.width() / 3 + (i - 1) * 80, k.height() / 2),
+                k.pos(k.width() / 2.5 + (i - 1) * 80, k.height() / 2),
                 k.outline(2, [0, 0, 0]),
                 k.anchor("center"),
                 k.area(),
@@ -124,9 +125,9 @@ const toolSelect = (k, appendObstacle, room) => {
             const toolText = k.add([
                 k.text(tool, {
                     font: ASSETNAMES.mainfont,
-                    size: 8,
+                    size: 16,
                 }),
-                k.pos(k.width() / 3 + (i - 1) * 80, k.height() / 2 + 50),
+                k.pos(k.width() / 2.5 + (i - 1) * 80, k.height() / 2 + 50),
                 k.color(0, 0, 0),
                 k.anchor("center"),
             ])
@@ -152,10 +153,6 @@ const toolSelect = (k, appendObstacle, room) => {
                 text.color = k.rgb(0, 0, 0);
                 text.text = "Click to place " + tool;
                 items.forEach((item) => {
-                    if (item === toolSprite[0] || item === toolSprite[1]) {
-                        return;
-                    }
-                    if (item === toolSprite) return;
                     if (item.length > 1) {
                         item.forEach((i) => {
                             i.destroy();
@@ -170,32 +167,26 @@ const toolSelect = (k, appendObstacle, room) => {
                     if (count % 2 == 0) {
                         room.send("tool", { tool: tool, pos: k.mousePos() });
                     }
-                    if (toolSprite.length > 1) {
-                        toolSprite[0].pos = k.mousePos();
-                        toolSprite[1].pos = k.mousePos();
-                    } else {
-                        toolSprite.pos = k.mousePos();
-                    }
                 })
                 setTimeout(() => {
                     k.onClick(async () => {
                         room.send("addObstacle", { tool: tool, pos: k.mousePos() });
                         text.destroy();
                         u.cancel();
-                        appendObstacle(toolSprite);
-                        //k.go(SCENES.game);
+                        //appendObstacle(toolSprite);
                     })
                 })
             });
         });
         let floatingObjectsMap = {};
+        eventEmitter.removeAllListeners(["tool"]);
         eventEmitter.on("tool", async (data) => {
             if (floatingObjectsMap[data.sessionId]) {
                 if (floatingObjectsMap[data.sessionId].length > 1) {
-                    floatingObjectsMap[data.sessionId][0].moveTo(data.newMessage.pos.x, data.newMessage.pos.y, 700);
-                    floatingObjectsMap[data.sessionId][1].moveTo(data.newMessage.pos.x, data.newMessage.pos.y, 700);
+                    floatingObjectsMap[data.sessionId][0].moveTo(data.newMessage.pos.x, data.newMessage.pos.y);
+                    floatingObjectsMap[data.sessionId][1].moveTo(data.newMessage.pos.x, data.newMessage.pos.y);
                 } else {
-                    floatingObjectsMap[data.sessionId].moveTo(data.newMessage.pos.x, data.newMessage.pos.y, 700);
+                    floatingObjectsMap[data.sessionId].moveTo(data.newMessage.pos.x, data.newMessage.pos.y);
                 }
             } else {
                 const toolSprite = await createToolAsset(k, data.newMessage.tool, 0);
@@ -211,6 +202,7 @@ const toolSelect = (k, appendObstacle, room) => {
                 floatingObjectsMap[data.sessionId] = toolSprite;
             }
         });
+        eventEmitter.removeAllListeners(["addObstacle"]);
         eventEmitter.on("addObstacle", async (data) => {
             appendObstacle(floatingObjectsMap[data.sessionId]);
         });

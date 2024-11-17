@@ -67,7 +67,7 @@ const homePage = (k, room) => {
             k.setCursor("pointer");
         });
         const hoverEnd = k.onHoverEnd("playbutton", (x) => {
-            playButton.color = k.rgb(255, 255, 255);
+            playButton.color = k.rgb(0, 0, 0);
             playButton.scale = k.vec2(1);
             k.setCursor("default");
         });

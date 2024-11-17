@@ -17,22 +17,8 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
     }
 
     const createGhost = (k, player) => {
-        const ghost = k.add([
-            k.sprite(ASSETNAMES.penger),
-            k.pos(player.pos.x - 2, player.pos.y - 2),
-            k.scale(1.1),
-            k.area({
-                shape: new k.Rect(k.vec2(), 12, 8),
-                offset: k.vec2(2, 12),
-            }),
-            k.body(),
-        ]);
-        ghost.play("dead");
-        room.send("death", { x: ghost.pos.x, y: ghost.pos.y });
+        room.send("death", { x: player.pos.x - 2, y:player.pos.y - 2 });
         k.shake(20);
-        ghost.onCollide("death", () => {
-            ghost.destroy();
-        })
     }
 
     const compareTwoPositions = (pos1, pos2) => {
@@ -80,7 +66,6 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
     }
 
     k.scene("game", async () => {
-
         const map = await fetch("sprites/map.json").then((res) => res.json());
         k.add([
             k.sprite("map"),
@@ -95,11 +80,10 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
                 obstacle.forEach((o) => {
                     k.add(o);
                 })
-                return;
             } else {
                 k.add(obstacle);
             }
-            if (obstacle.is(ASSETNAMES.cutter)) {
+            if (!Array.isArray(obstacle) && obstacle.is(ASSETNAMES.cutter)) {
                 obstacle.play("run");
             }
         });
@@ -114,7 +98,7 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
             } else {
                 k.add([
                     k.sprite(ASSETNAMES.penger),
-                    k.pos(player.x, player.y),
+                    k.pos(0, 0),
                     k.scale(1.5),
                     k.area({
                         shape: new k.Rect(k.vec2(), 15, 16),
@@ -124,8 +108,6 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
                     k.anchor("center"),
                     k.body(),
                     k.animate(),
-                    "player",
-                    player.sessionId,
                     k.shader(ASSETNAMES.colorReplaceShader, () => ({
                         in_r: 143 / 255,
                         in_g: 195 / 255,
@@ -134,6 +116,9 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
                         out_g: player.green / 255,
                         out_b: player.blue / 255,
                     })),
+                    "player",
+                    player.sessionId,
+
                 ])
             }
         });
@@ -159,6 +144,7 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
                 out_b: out_b / 255,
             })),
             "player",
+            "me",
         ])
         setPlayerPosition(startCollider, player);
         const triangleFollower = k.add([
@@ -230,6 +216,9 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
             createGhost(k, player);
             setPlayerPosition(startCollider, player);
         });
+        k.onClick(() => {
+            player.moveTo(k.mousePos());
+        })
 
         k.onCollide("player", ASSETNAMES.stair, (player, stair) => {
             player.pos.x = stair.pos.x;
@@ -246,8 +235,10 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
             setPlayerPosition(startCollider, player);
         });
 
-        k.onCollide("player", "end", (player, end) => {
-            k.go("toolselect");
+        k.onCollide("me", "end", (player, end) => {
+            player.destroy();
+            triangleFollower.destroy();
+            room.send("end", { x: player.pos.x, y: player.pos.y });
         })
         k.loop(2, () => {
             k.get(ASSETNAMES.surikenThrower).forEach((arrow) => {
@@ -289,6 +280,7 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
             }
 
         })
+        eventEmitter.removeAllListeners(["death"]);
         eventEmitter.on("death", (data) => {
             const ghost = k.add([
                 k.sprite(ASSETNAMES.penger),
@@ -301,7 +293,11 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
                 k.body(),
             ]);
             ghost.play("dead");
+            ghost.onCollide("death", () => {
+                ghost.destroy();
+            })
         });
+        eventEmitter.removeAllListeners(["playerUpdate"]);
         eventEmitter.on("playerUpdate", (data) => {
             k.get(data.sessionId).forEach(async (player) => {
                 if (data.newMessage.teleport) {
@@ -309,6 +305,7 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
                     player.pos.y = data.newMessage.y;
                 } else {
                     player.moveTo(data.newMessage.x, data.newMessage.y, 700);
+                    player.play("run");
                 }
             })
         });

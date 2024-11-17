@@ -68,6 +68,6 @@ const ASSETNAMES = {
     mainfont: "mainfont",
     colorReplaceShader: "colorReplaceShader",
 }
-const TOOLS = [ASSETNAMES.spike, ASSETNAMES.stair, ASSETNAMES.cutter, ASSETNAMES.hoverTile, ASSETNAMES.surikenThrower, ASSETNAMES.bomb];
+const TOOLS = [ASSETNAMES.spike, ASSETNAMES.stair, ASSETNAMES.cutter, ASSETNAMES.hoverTile, ASSETNAMES.surikenThrower];
 export { ASSETNAMES, SCENES, TOOLS };
 export default loadAssets;
