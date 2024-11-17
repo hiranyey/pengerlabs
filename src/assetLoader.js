@@ -24,7 +24,7 @@ const loadAssets = async (kaplay) => {
             run: { from: 0, to: 7, loop: true, speed: 16 },
         }
     });
-    await kaplay.loadSprite("surikenThrower", "sprites/arrow.png",{
+    await kaplay.loadSprite("surikenThrower", "sprites/arrow.png", {
         sliceX: 6,
         sliceY: 1,
         anims: {
@@ -50,8 +50,8 @@ const loadAssets = async (kaplay) => {
 const SCENES = {
     game: "game",
     toolselect: "toolselect",
-    error:"error",
-    home:"home",
+    error: "error",
+    home: "home",
 }
 
 const ASSETNAMES = {
@@ -68,6 +68,6 @@ const ASSETNAMES = {
     mainfont: "mainfont",
     colorReplaceShader: "colorReplaceShader",
 }
-const TOOLS = [ASSETNAMES.spike, ASSETNAMES.stair, ASSETNAMES.cutter, ASSETNAMES.hoverTile,ASSETNAMES.surikenThrower,ASSETNAMES.bomb];
+const TOOLS = [ASSETNAMES.spike, ASSETNAMES.stair, ASSETNAMES.cutter, ASSETNAMES.hoverTile, ASSETNAMES.surikenThrower, ASSETNAMES.bomb];
 export { ASSETNAMES, SCENES, TOOLS };
 export default loadAssets;

@@ -192,10 +192,10 @@ const toolSelect = (k, appendObstacle, room) => {
         eventEmitter.on("tool", async (data) => {
             if (floatingObjectsMap[data.sessionId]) {
                 if (floatingObjectsMap[data.sessionId].length > 1) {
-                    floatingObjectsMap[data.sessionId][0].moveTo(data.newMessage.pos.x, data.newMessage.pos.y,700);
-                    floatingObjectsMap[data.sessionId][1].moveTo(data.newMessage.pos.x, data.newMessage.pos.y,700);
+                    floatingObjectsMap[data.sessionId][0].moveTo(data.newMessage.pos.x, data.newMessage.pos.y, 700);
+                    floatingObjectsMap[data.sessionId][1].moveTo(data.newMessage.pos.x, data.newMessage.pos.y, 700);
                 } else {
-                    floatingObjectsMap[data.sessionId].moveTo(data.newMessage.pos.x, data.newMessage.pos.y,700);
+                    floatingObjectsMap[data.sessionId].moveTo(data.newMessage.pos.x, data.newMessage.pos.y, 700);
                 }
             } else {
                 const toolSprite = await createToolAsset(k, data.newMessage.tool, 0);

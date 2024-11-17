@@ -7,7 +7,7 @@ const randomStartingPoint = (startCollider) => {
     return { x: randomX, y: randomY };
 }
 
-const gameLoop = (k, getObstacles,room,players,mySessionId) => {
+const gameLoop = (k, getObstacles, room, players, mySessionId) => {
 
     const recordScreen = (time) => {
         const recorder = k.record(60);
@@ -71,16 +71,16 @@ const gameLoop = (k, getObstacles,room,players,mySessionId) => {
         ]);
     }
 
-
     const setPlayerPosition = (startCollider, player) => {
         const startingPoint = randomStartingPoint(startCollider);
         player.pos.x = startingPoint.x;
         player.pos.y = startingPoint.y;
+        room.send("playerUpdate", { x: player.pos.x, y: player.pos.y, teleport: true });
         player.play("idle");
     }
 
     k.scene("game", async () => {
-        
+
         const map = await fetch("sprites/map.json").then((res) => res.json());
         k.add([
             k.sprite("map"),
@@ -108,11 +108,10 @@ const gameLoop = (k, getObstacles,room,players,mySessionId) => {
         let out_b;
         players.forEach((player) => {
             if (player.sessionId === mySessionId) {
-                console.log(player);
                 out_r = player.red;
                 out_g = player.green;
                 out_b = player.blue;
-            }else{
+            } else {
                 k.add([
                     k.sprite(ASSETNAMES.penger),
                     k.pos(player.x, player.y),
@@ -162,6 +161,11 @@ const gameLoop = (k, getObstacles,room,players,mySessionId) => {
             "player",
         ])
         setPlayerPosition(startCollider, player);
+        const triangleFollower = k.add([
+            k.polygon([k.vec2(-5, -5), k.vec2(0, 0), k.vec2(5, -5)]),
+            k.pos(k.width() / 2, k.height() / 2),
+            k.color([out_r, out_g, out_b]),
+        ]);
         player.onGround(() => {
             if (k.isKeyDown("right") || k.isKeyDown("left")) {
                 player.play("run");
@@ -261,8 +265,10 @@ const gameLoop = (k, getObstacles,room,players,mySessionId) => {
                 }, 400);
             })
         });
-        
+
         k.onUpdate(() => {
+            triangleFollower.pos.x = player.pos.x;
+            triangleFollower.pos.y = player.pos.y - 20;
             room.send("playerUpdate", { x: player.pos.x, y: player.pos.y });
             if (player.is("body") && player.isGrounded()) {
                 if (compareTwoPositions(player.pos, player.prevLocation) && player.getCurAnim().name !== "idle") {
@@ -297,8 +303,13 @@ const gameLoop = (k, getObstacles,room,players,mySessionId) => {
             ghost.play("dead");
         });
         eventEmitter.on("playerUpdate", (data) => {
-            k.get(data.sessionId).forEach((player) => {
-                player.moveTo(data.newMessage.x, data.newMessage.y,700);
+            k.get(data.sessionId).forEach(async (player) => {
+                if (data.newMessage.teleport) {
+                    player.pos.x = data.newMessage.x;
+                    player.pos.y = data.newMessage.y;
+                } else {
+                    player.moveTo(data.newMessage.x, data.newMessage.y, 700);
+                }
             })
         });
 

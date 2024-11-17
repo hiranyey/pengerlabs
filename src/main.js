@@ -103,11 +103,11 @@ loadAssets(k).then(async () => {
                         eventEmitter.emit(newType, { newMessage, sessionId });
                     } else if (newType == "sceneChange") {
                         k.go(newMessage);
-                    }else if(newType == "death"){
+                    } else if (newType == "death") {
                         eventEmitter.emit(newType, { newMessage, sessionId });
-                    }else if(newType == "playerUpdate"){
+                    } else if (newType == "playerUpdate") {
                         eventEmitter.emit(newType, { newMessage, sessionId });
-                    }else {
+                    } else {
                         console.log("Unknown message type: " + newType);
                     }
                 }
@@ -132,7 +132,7 @@ loadAssets(k).then(async () => {
     let obstacles = [];
     const appendObstacle = (obstacle) => obstacles.push(obstacle);
     const getObstacles = () => obstacles;
-    homePage(k,room);
+    homePage(k, room);
     let once = true;
     document.onclick = () => {
         if (once) {
@@ -143,6 +143,6 @@ loadAssets(k).then(async () => {
         }
     }
     toolselect(k, appendObstacle, room);
-    gameLoop(k, getObstacles,room,players,mySessionId);
+    gameLoop(k, getObstacles, room, players, mySessionId);
     k.go(SCENES.home);
 });
