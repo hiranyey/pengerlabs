@@ -3,7 +3,7 @@ import loadAssets from "./assetLoader"
 import toolselect from "./toolselect"
 import gameLoop from "./mainloop"
 import { SCENES, ASSETNAMES } from "./assetLoader";
-import { client } from "./colyseus";
+import { client } from "./colyseusSetup";
 import eventEmitter from "./eventEmitter";
 import homePage from "./homeScreen";
 

@@ -293,7 +293,7 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
                 k.body(),
             ]);
             ghost.play("dead");
-            ghost.onCollide("death", () => {
+            ghost.onCollide("deathPlatform", () => {
                 ghost.destroy();
             })
         });
