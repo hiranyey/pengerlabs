@@ -1,4 +1,5 @@
-import { ASSETNAMES, TOOLS } from "./assetLoader.js";
+import { ASSETNAMES } from "./assetLoader.js";
+import eventEmitter from "./eventEmitter.js";
 
 const randomStartingPoint = (startCollider) => {
     const randomX = Math.floor(Math.random() * startCollider.width * 2) + startCollider.x * 2;
@@ -6,7 +7,7 @@ const randomStartingPoint = (startCollider) => {
     return { x: randomX, y: randomY };
 }
 
-const gameLoop = (k, getObstacles) => {
+const gameLoop = (k, getObstacles,room,players,mySessionId) => {
 
     const recordScreen = (time) => {
         const recorder = k.record(60);
@@ -27,6 +28,7 @@ const gameLoop = (k, getObstacles) => {
             k.body(),
         ]);
         ghost.play("dead");
+        room.send("death", { x: ghost.pos.x, y: ghost.pos.y });
         k.shake(20);
         ghost.onCollide("death", () => {
             ghost.destroy();
@@ -78,6 +80,7 @@ const gameLoop = (k, getObstacles) => {
     }
 
     k.scene("game", async () => {
+        
         const map = await fetch("sprites/map.json").then((res) => res.json());
         k.add([
             k.sprite("map"),
@@ -100,6 +103,42 @@ const gameLoop = (k, getObstacles) => {
                 obstacle.play("run");
             }
         });
+        let out_r;
+        let out_g;
+        let out_b;
+        players.forEach((player) => {
+            if (player.sessionId === mySessionId) {
+                console.log(player);
+                out_r = player.red;
+                out_g = player.green;
+                out_b = player.blue;
+            }else{
+                k.add([
+                    k.sprite(ASSETNAMES.penger),
+                    k.pos(player.x, player.y),
+                    k.scale(1.5),
+                    k.area({
+                        shape: new k.Rect(k.vec2(), 15, 16),
+                        offset: k.vec2(0, 2),
+                        collisionIgnore: ["player"],
+                    }),
+                    k.anchor("center"),
+                    k.body(),
+                    k.animate(),
+                    "player",
+                    player.sessionId,
+                    k.shader(ASSETNAMES.colorReplaceShader, () => ({
+                        in_r: 143 / 255,
+                        in_g: 195 / 255,
+                        in_b: 216 / 255,
+                        out_r: player.red / 255,
+                        out_g: player.green / 255,
+                        out_b: player.blue / 255,
+                    })),
+                ])
+            }
+        });
+
         const player = k.add([
             k.pos(0, 0),
             k.sprite(ASSETNAMES.penger),
@@ -116,9 +155,9 @@ const gameLoop = (k, getObstacles) => {
                 in_r: 143 / 255,
                 in_g: 195 / 255,
                 in_b: 216 / 255,
-                out_r: 128 / 255,
-                out_g: 32 / 255,
-                out_b: 16 / 255,
+                out_r: out_r / 255,
+                out_g: out_g / 255,
+                out_b: out_b / 255,
             })),
             "player",
         ])
@@ -130,6 +169,9 @@ const gameLoop = (k, getObstacles) => {
                 player.play("idle");
             }
         });
+        k.onKeyRelease("t", () => {
+            recordScreen(5000);
+        })
         k.onButtonDown("up", () => {
             if (player.is("body") && player.isGrounded()) {
                 player.play("jump");
@@ -219,8 +261,9 @@ const gameLoop = (k, getObstacles) => {
                 }, 400);
             })
         });
-
+        
         k.onUpdate(() => {
+            room.send("playerUpdate", { x: player.pos.x, y: player.pos.y });
             if (player.is("body") && player.isGrounded()) {
                 if (compareTwoPositions(player.pos, player.prevLocation) && player.getCurAnim().name !== "idle") {
                     player.play("idle");
@@ -240,6 +283,24 @@ const gameLoop = (k, getObstacles) => {
             }
 
         })
+        eventEmitter.on("death", (data) => {
+            const ghost = k.add([
+                k.sprite(ASSETNAMES.penger),
+                k.pos(data.newMessage.x, data.newMessage.y),
+                k.scale(1.1),
+                k.area({
+                    shape: new k.Rect(k.vec2(), 12, 8),
+                    offset: k.vec2(2, 12),
+                }),
+                k.body(),
+            ]);
+            ghost.play("dead");
+        });
+        eventEmitter.on("playerUpdate", (data) => {
+            k.get(data.sessionId).forEach((player) => {
+                player.moveTo(data.newMessage.x, data.newMessage.y,700);
+            })
+        });
 
     });
 

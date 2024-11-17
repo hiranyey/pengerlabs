@@ -1,5 +1,6 @@
 
 const loadAssets = async (kaplay) => {
+    await kaplay.loadMusic("bgm", "music/bg.mp3");
     await kaplay.loadSprite("map", "sprites/map.png");
 
     await kaplay.loadSprite("penger", "sprites/snowman.png", {
@@ -31,6 +32,7 @@ const loadAssets = async (kaplay) => {
             run: { from: 0, to: 5, loop: false, speed: 5 },
         }
     });
+    await kaplay.loadSprite("bomb", "sprites/bomb.png")
     await kaplay.loadSprite("suriken", "sprites/suriken.png", {
         sliceX: 8,
         sliceY: 1,
@@ -48,6 +50,8 @@ const loadAssets = async (kaplay) => {
 const SCENES = {
     game: "game",
     toolselect: "toolselect",
+    error:"error",
+    home:"home",
 }
 
 const ASSETNAMES = {
@@ -59,10 +63,11 @@ const ASSETNAMES = {
     cutter: "cutter",
     surikenThrower: "surikenThrower",
     suriken: "suriken",
+    bomb: "bomb",
     hoverTile: "hoverTile",
     mainfont: "mainfont",
     colorReplaceShader: "colorReplaceShader",
 }
-const TOOLS = [ASSETNAMES.spike, ASSETNAMES.stair, ASSETNAMES.cutter, ASSETNAMES.hoverTile,ASSETNAMES.surikenThrower];
+const TOOLS = [ASSETNAMES.spike, ASSETNAMES.stair, ASSETNAMES.cutter, ASSETNAMES.hoverTile,ASSETNAMES.surikenThrower,ASSETNAMES.bomb];
 export { ASSETNAMES, SCENES, TOOLS };
 export default loadAssets;

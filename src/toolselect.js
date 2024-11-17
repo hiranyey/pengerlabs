@@ -1,7 +1,7 @@
 import { ASSETNAMES, SCENES, TOOLS } from "./assetLoader";
+import eventEmitter from './eventEmitter';
 
-
-const toolSelect = (k, appendObstacle) => {
+const toolSelect = (k, appendObstacle, room) => {
     const getToolArea = (tool) => {
         switch (tool) {
             case ASSETNAMES.spike:
@@ -41,6 +41,10 @@ const toolSelect = (k, appendObstacle) => {
             case ASSETNAMES.surikenThrower:
                 return {
                     angle: 90,
+                }
+            case ASSETNAMES.bomb:
+                return {
+                    angle: 0,
                 }
         }
     }
@@ -91,6 +95,7 @@ const toolSelect = (k, appendObstacle) => {
     }
 
     k.scene(SCENES.toolselect, () => {
+
         k.add([
             k.sprite("map"),
             k.pos(0, 0),
@@ -159,7 +164,12 @@ const toolSelect = (k, appendObstacle) => {
                     }
                     item.destroy();
                 });
+                let count = 0;
                 const u = k.onUpdate(() => {
+                    count++;
+                    if (count % 2 == 0) {
+                        room.send("tool", { tool: tool, pos: k.mousePos() });
+                    }
                     if (toolSprite.length > 1) {
                         toolSprite[0].pos = k.mousePos();
                         toolSprite[1].pos = k.mousePos();
@@ -168,14 +178,41 @@ const toolSelect = (k, appendObstacle) => {
                     }
                 })
                 setTimeout(() => {
-                    k.onClick(() => {
+                    k.onClick(async () => {
+                        room.send("addObstacle", { tool: tool, pos: k.mousePos() });
                         text.destroy();
                         u.cancel();
                         appendObstacle(toolSprite);
-                        k.go(SCENES.game);
+                        //k.go(SCENES.game);
                     })
                 })
             });
+        });
+        let floatingObjectsMap = {};
+        eventEmitter.on("tool", async (data) => {
+            if (floatingObjectsMap[data.sessionId]) {
+                if (floatingObjectsMap[data.sessionId].length > 1) {
+                    floatingObjectsMap[data.sessionId][0].moveTo(data.newMessage.pos.x, data.newMessage.pos.y,700);
+                    floatingObjectsMap[data.sessionId][1].moveTo(data.newMessage.pos.x, data.newMessage.pos.y,700);
+                } else {
+                    floatingObjectsMap[data.sessionId].moveTo(data.newMessage.pos.x, data.newMessage.pos.y,700);
+                }
+            } else {
+                const toolSprite = await createToolAsset(k, data.newMessage.tool, 0);
+                if (toolSprite.length > 1) {
+                    toolSprite[0].pos.x = data.newMessage.pos.x;
+                    toolSprite[0].pos.y = data.newMessage.pos.y;
+                    toolSprite[1].pos.x = data.newMessage.pos.x;
+                    toolSprite[1].pos.y = data.newMessage.pos.y;
+                } else {
+                    toolSprite.pos.x = data.newMessage.pos.x;
+                    toolSprite.pos.y = data.newMessage.pos.y;
+                }
+                floatingObjectsMap[data.sessionId] = toolSprite;
+            }
+        });
+        eventEmitter.on("addObstacle", async (data) => {
+            appendObstacle(floatingObjectsMap[data.sessionId]);
         });
     });
 }

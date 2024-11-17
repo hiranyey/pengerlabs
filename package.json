@@ -8,6 +8,8 @@
 		"zip": "npm run build && mkdir -p dist && zip -r dist/game.zip dist -x \"**/.DS_Store\""
 	},
 	"dependencies": {
+		"colyseus.js": "^0.15.26",
+		"events": "^3.3.0",
 		"kaplay": "^3001.0.2"
 	},
 	"devDependencies": {
