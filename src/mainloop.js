@@ -231,9 +231,9 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
             k.play(ASSETNAMES.dead);
             setPlayerPosition(startCollider, player);
         });
-        k.onClick(() => {
-            player.moveTo(k.mousePos());
-        })
+        // k.onClick(() => {
+        //     player.moveTo(k.mousePos());
+        // })
 
         k.onCollide("player", ASSETNAMES.stair, (player, stair) => {
             player.pos.x = stair.pos.x;

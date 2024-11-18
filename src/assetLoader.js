@@ -43,7 +43,7 @@ const loadAssets = async (kaplay) => {
             run: { from: 0, to: 7, loop: true, speed: 8 },
         }
     });
-    await kaplay.loadSprite("hoverTile", "sprites/hoverTile.png");
+    await kaplay.loadSprite("tile", "sprites/hoverTile.png");
 
     await kaplay.loadShaderURL("colorReplaceShader", null, "shaders/colorReplace.glsl");
 
@@ -67,7 +67,7 @@ const ASSETNAMES = {
     surikenThrower: "surikenThrower",
     suriken: "suriken",
     bomb: "bomb",
-    hoverTile: "hoverTile",
+    hoverTile: "tile",
     mainfont: "mainfont",
     colorReplaceShader: "colorReplaceShader",
     bgm: "bgm",
