@@ -119,7 +119,7 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
                     "player",
                     player.sessionId,
 
-                ])
+                ]).play("run");
             }
         });
 
@@ -152,8 +152,12 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
             k.pos(k.width() / 2, k.height() / 2),
             k.color([out_r, out_g, out_b]),
         ]);
+        let currentMusic = k.play(ASSETNAMES.run,{volume:0.5});
         player.onGround(() => {
             if (k.isKeyDown("right") || k.isKeyDown("left")) {
+                if(currentMusic.time()==0){
+                    currentMusic = k.play(ASSETNAMES.run,{volume:0.5});
+                }
                 player.play("run");
             } else {
                 player.play("idle");
@@ -164,6 +168,7 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
         })
         k.onButtonDown("up", () => {
             if (player.is("body") && player.isGrounded()) {
+                k.play(ASSETNAMES.jump);
                 player.play("jump");
                 player.jump(400);
             }
@@ -183,6 +188,9 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
             if (player.usingStair) {
                 return;
             }
+            if(currentMusic.time()==0){
+                currentMusic = k.play(ASSETNAMES.run,{volume:0.5});
+            }
             player.flipX = true;
             player.move(100, 0);
         })
@@ -193,32 +201,39 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
             if (player.usingStair) {
                 return;
             }
+            if(currentMusic.time()==0){
+                currentMusic = k.play(ASSETNAMES.run,{volume:0.5});
+            }
             player.flipX = false;
             player.move(-100, 0);
         })
 
         k.onButtonRelease("death", () => {
             createGhost(k, player);
+            k.play(ASSETNAMES.dead);
             setPlayerPosition(startCollider, player);
         })
         player.onCollide("deathPlatform", () => {
+            k.play(ASSETNAMES.dead);
             setPlayerPosition(startCollider, player);
         })
 
         k.onCollide("player", ASSETNAMES.spike, (player, spike) => {
             if (spike.pos.y - spike.height > player.pos.y - 15) {
                 createGhost(k, player);
+                k.play(ASSETNAMES.dead);
                 setPlayerPosition(startCollider, player);
             }
         });
         k.onCollide("player", ASSETNAMES.cutter, async (player, cutter) => {
             player.pos.x = cutter.pos.x - cutter.width / 2
             createGhost(k, player);
+            k.play(ASSETNAMES.dead);
             setPlayerPosition(startCollider, player);
         });
-        // k.onClick(() => {
-        //     player.moveTo(k.mousePos());
-        // })
+        k.onClick(() => {
+            player.moveTo(k.mousePos());
+        })
 
         k.onCollide("player", ASSETNAMES.stair, (player, stair) => {
             player.pos.x = stair.pos.x;
@@ -232,13 +247,16 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
         });
         k.onCollide("player", "arrowCollider", (player, arrow) => {
             createGhost(k, player);
+            k.play(ASSETNAMES.dead);
             setPlayerPosition(startCollider, player);
         });
 
-        k.onCollide("me", "end", (player, end) => {
+        k.onCollide("player", "end", (player, end) => {
             player.destroy();
-            triangleFollower.destroy();
-            room.send("end", { x: player.pos.x, y: player.pos.y });
+            if(player.is("me")){
+                triangleFollower.destroy();
+                room.send("end", { x: player.pos.x, y: player.pos.y });
+            }
         })
         k.loop(2, () => {
             k.get(ASSETNAMES.surikenThrower).forEach((arrow) => {
@@ -293,11 +311,16 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
                 k.body(),
             ]);
             ghost.play("dead");
+            ghost.onGround(() => {
+                ghost.unuse("body");
+                ghost.use(k.body({isStatic: true}));
+            })
             ghost.onCollide("deathPlatform", () => {
                 ghost.destroy();
             })
         });
         eventEmitter.removeAllListeners(["playerUpdate"]);
+        let teleportCounter = 0;
         eventEmitter.on("playerUpdate", (data) => {
             k.get(data.sessionId).forEach(async (player) => {
                 if (data.newMessage.teleport) {
@@ -305,7 +328,11 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
                     player.pos.y = data.newMessage.y;
                 } else {
                     player.moveTo(data.newMessage.x, data.newMessage.y, 700);
-                    player.play("run");
+                    teleportCounter++;
+                    if (teleportCounter === 20) {
+                        teleportCounter = 0;
+                        player.moveTo(data.newMessage.x, data.newMessage.y);
+                    }
                 }
             })
         });

@@ -1,6 +1,9 @@
 
 const loadAssets = async (kaplay) => {
     await kaplay.loadMusic("bgm", "music/bg.mp3");
+    await kaplay.loadSound("jump", "music/jump.wav");
+    await kaplay.loadSound("dead", "music/dead.wav");
+    await kaplay.loadSound("run", "music/run.wav");
     await kaplay.loadSprite("map", "sprites/map.png");
 
     await kaplay.loadSprite("penger", "sprites/snowman.png", {
@@ -67,6 +70,10 @@ const ASSETNAMES = {
     hoverTile: "hoverTile",
     mainfont: "mainfont",
     colorReplaceShader: "colorReplaceShader",
+    bgm: "bgm",
+    jump: "jump",
+    dead: "dead",
+    run: "run",
 }
 const TOOLS = [ASSETNAMES.spike, ASSETNAMES.stair, ASSETNAMES.cutter, ASSETNAMES.hoverTile, ASSETNAMES.surikenThrower];
 export { ASSETNAMES, SCENES, TOOLS };

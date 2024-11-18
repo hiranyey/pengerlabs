@@ -204,6 +204,14 @@ const toolSelect = (k, appendObstacle, room) => {
         });
         eventEmitter.removeAllListeners(["addObstacle"]);
         eventEmitter.on("addObstacle", async (data) => {
+            if (floatingObjectsMap[data.sessionId]) {
+                if (floatingObjectsMap[data.sessionId].length > 1) {
+                    floatingObjectsMap[data.sessionId][0].moveTo(data.newMessage.pos.x, data.newMessage.pos.y);
+                    floatingObjectsMap[data.sessionId][1].moveTo(data.newMessage.pos.x, data.newMessage.pos.y);
+                } else {
+                    floatingObjectsMap[data.sessionId].moveTo(data.newMessage.pos.x, data.newMessage.pos.y);
+                }
+            }
             appendObstacle(floatingObjectsMap[data.sessionId]);
         });
     });

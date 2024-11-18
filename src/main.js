@@ -42,7 +42,7 @@ const createPlayerText = (player, k, suffix) => {
         const newPlayer = k.add([
             k.text(player.name + suffix, {
                 font: ASSETNAMES.mainfont,
-                size: 7,
+                size: 10,
             }),
             k.pos(k.width() - 100, 10 + currentCount * 20),
             k.color(player.red, player.green, player.blue),
@@ -136,10 +136,12 @@ loadAssets(k).then(async () => {
     let once = true;
     document.onclick = () => {
         if (once) {
-            k.play("bgm", {
-                loop: true,
-            });
             once = false;
+            let bgmMusic = k.play(ASSETNAMES.bgm);
+            setInterval(() => {
+                bgmMusic.stop();
+                bgmMusic = k.play(ASSETNAMES.bgm);
+            }, 132000);
         }
     }
     toolselect(k, appendObstacle, room);
