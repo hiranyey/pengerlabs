@@ -1,5 +1,6 @@
 import { ASSETNAMES } from "./assetLoader.js";
 import eventEmitter from "./eventEmitter.js";
+const DEBUG = import.meta.env.VITE_DEBUG === 'true';
 
 const randomStartingPoint = (startCollider) => {
     const randomX = Math.floor(Math.random() * startCollider.width * 2) + startCollider.x * 2;
@@ -215,6 +216,7 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
         })
         player.onCollide("deathPlatform", () => {
             k.play(ASSETNAMES.dead);
+            room.send("death", { x: player.pos.x, y: player.pos.y });
             setPlayerPosition(startCollider, player);
         })
 
@@ -231,10 +233,12 @@ const gameLoop = (k, getObstacles, room, players, mySessionId) => {
             k.play(ASSETNAMES.dead);
             setPlayerPosition(startCollider, player);
         });
-        // k.onClick(() => {
-        //     player.moveTo(k.mousePos());
-        // })
-
+        if(DEBUG){
+            k.onClick(() => {
+                player.moveTo(k.mousePos());
+            })
+        }
+        
         k.onCollide("player", ASSETNAMES.stair, (player, stair) => {
             player.pos.x = stair.pos.x;
             if (stair.pos.y > player.pos.y) {

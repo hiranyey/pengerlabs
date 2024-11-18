@@ -1,7 +1,7 @@
 import { ASSETNAMES, SCENES, TOOLS } from "./assetLoader";
 import eventEmitter from './eventEmitter';
 
-const toolSelect = (k, appendObstacle, room) => {
+const toolSelect = (k, appendObstacle,getObstacles, room) => {
     const getToolArea = (tool) => {
         switch (tool) {
             case ASSETNAMES.spike:
@@ -111,6 +111,16 @@ const toolSelect = (k, appendObstacle, room) => {
             k.color(0, 0, 0),
             k.anchor("center"),
         ])
+        getObstacles().forEach((obstacle) => {
+            if (obstacle.length > 1) {
+                obstacle.forEach((o) => {
+                    k.add(o);
+                })
+            } else {
+                k.add(obstacle);
+            }
+        });
+        
         const items = [];
         TOOLS.forEach(async (tool, i) => {
             const greybox = k.add([
@@ -169,10 +179,11 @@ const toolSelect = (k, appendObstacle, room) => {
                     }
                 })
                 setTimeout(() => {
-                    k.onClick(async () => {
+                    const select= k.onClick(async () => {
                         room.send("addObstacle", { tool: tool, pos: k.mousePos() });
                         text.destroy();
                         u.cancel();
+                        select.cancel();
                         //appendObstacle(toolSprite);
                     })
                 })

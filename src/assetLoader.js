@@ -55,6 +55,7 @@ const SCENES = {
     toolselect: "toolselect",
     error: "error",
     home: "home",
+    leaderboard: "leaderboard",
 }
 
 const ASSETNAMES = {

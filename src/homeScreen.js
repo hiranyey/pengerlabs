@@ -42,7 +42,7 @@ const homePage = (k, room) => {
         ])
         const penger = k.add([
             k.sprite("penger"),
-            k.pos(title.width + 50, k.height() / 4 - 20),
+            k.pos(title.pos.x - 140, k.height() / 4 - 20),
             k.scale(4),
             k.anchor("center"),
         ]);

@@ -6,6 +6,7 @@ import { SCENES, ASSETNAMES } from "./assetLoader";
 import { client } from "./colyseusSetup";
 import eventEmitter from "./eventEmitter";
 import homePage from "./homeScreen";
+import leaderboard from "./leaderboard";
 
 function updatePlayerLists(currentPlayer, serverPlayers) {
     const newPlayers = [];
@@ -34,7 +35,7 @@ const createPlayerText = (player, k, suffix) => {
     setTimeout(() => {
         const blackBackground = k.add([
             k.rect(150, 16),
-            k.pos(k.width() - 100, 10 + currentCount * 20),
+            k.pos(k.width() - 100, 10 + currentCount * 22),
             k.color(0, 0, 0),
             k.anchor("center"),
             "playertext",
@@ -44,7 +45,7 @@ const createPlayerText = (player, k, suffix) => {
                 font: ASSETNAMES.mainfont,
                 size: 10,
             }),
-            k.pos(k.width() - 100, 10 + currentCount * 20),
+            k.pos(k.width() - 100, 10 + currentCount * 22),
             k.color(player.red, player.green, player.blue),
             k.anchor("center"),
             "playertext",
@@ -102,6 +103,9 @@ loadAssets(k).then(async () => {
                     eventEmitter.emit(newType, { newMessage, sessionId });
                 } else if (newType == "sceneChange") {
                     k.go(newMessage);
+                    setTimeout(() => {
+                    eventEmitter.emit(newType, { newMessage, state:type.state });
+                    }, 100);
                 } else if (newType == "death") {
                     eventEmitter.emit(newType, { newMessage, sessionId });
                 } else if (newType == "playerUpdate" && sessionId != mySessionId) {
@@ -144,7 +148,8 @@ loadAssets(k).then(async () => {
             }, 132000);
         }
     }
-    toolselect(k, appendObstacle, room);
+    leaderboard(k, room);
+    toolselect(k, appendObstacle,getObstacles, room);
     gameLoop(k, getObstacles, room, players, mySessionId);
     k.go(SCENES.home);
 });
