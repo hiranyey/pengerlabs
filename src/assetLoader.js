@@ -44,6 +44,7 @@ const loadAssets = async (kaplay) => {
         }
     });
     await kaplay.loadSprite("tile", "sprites/hoverTile.png");
+    await kaplay.loadSprite("plus", "sprites/plus.png");
 
     await kaplay.loadShaderURL("colorReplaceShader", null, "shaders/colorReplace.glsl");
 
@@ -75,6 +76,7 @@ const ASSETNAMES = {
     jump: "jump",
     dead: "dead",
     run: "run",
+    plus: "plus",
 }
 const TOOLS = [ASSETNAMES.spike, ASSETNAMES.stair, ASSETNAMES.cutter, ASSETNAMES.hoverTile, ASSETNAMES.surikenThrower];
 export { ASSETNAMES, SCENES, TOOLS };

@@ -99,19 +99,17 @@ loadAssets(k).then(async () => {
                 const sessionId = type.sender;
                 if (newType == "tool") {
                     eventEmitter.emit(newType, { newMessage, sessionId });
-                } else if (newType == "addObstacle") {
+                } else if (newType == "addObstacle" && sessionId != mySessionId) {
                     eventEmitter.emit(newType, { newMessage, sessionId });
                 } else if (newType == "sceneChange") {
                     k.go(newMessage);
                     setTimeout(() => {
-                    eventEmitter.emit(newType, { newMessage, state:type.state });
+                        eventEmitter.emit(newType, { newMessage, state: type.state });
                     }, 100);
                 } else if (newType == "death") {
                     eventEmitter.emit(newType, { newMessage, sessionId });
                 } else if (newType == "playerUpdate" && sessionId != mySessionId) {
                     eventEmitter.emit(newType, { newMessage, sessionId });
-                } else {
-                   // console.log("Unknown message type: " + newType);
                 }
             }
         });
@@ -149,7 +147,6 @@ loadAssets(k).then(async () => {
         }
     }
     leaderboard(k, room);
-    toolselect(k, appendObstacle,getObstacles, room);
-    gameLoop(k, getObstacles, room, players, mySessionId);
+    gameLoop(k, appendObstacle, getObstacles, room, players, mySessionId);
     k.go(SCENES.home);
 });

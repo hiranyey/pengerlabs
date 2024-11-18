@@ -159,10 +159,11 @@ const toolSelect = (k, appendObstacle,getObstacles, room) => {
             items.push(...[greybox, toolSprite, toolText]);
             greybox.onClick(() => {
                 greybox.destroy();
-                text.scale = k.vec2(1);
-                text.color = k.rgb(0, 0, 0);
-                text.text = "Click to place " + tool;
                 items.forEach((item) => {
+                    if (item === toolSprite[0] || item === toolSprite[1]) {
+                        return;
+                    }
+                    if (item === toolSprite) return;
                     if (item.length > 1) {
                         item.forEach((i) => {
                             i.destroy();
@@ -171,11 +172,12 @@ const toolSelect = (k, appendObstacle,getObstacles, room) => {
                     }
                     item.destroy();
                 });
-                let count = 0;
                 const u = k.onUpdate(() => {
-                    count++;
-                    if (count % 2 == 0) {
-                        room.send("tool", { tool: tool, pos: k.mousePos() });
+                    if (toolSprite.length > 1) {
+                        toolSprite[0].pos = k.mousePos();
+                        toolSprite[1].pos = k.mousePos();
+                    } else {
+                        toolSprite.pos = k.mousePos();
                     }
                 })
                 setTimeout(() => {
