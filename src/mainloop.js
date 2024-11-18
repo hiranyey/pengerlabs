@@ -212,9 +212,19 @@ const gameLoop = (k, appendObstacle, getObstacles, room, players, mySessionId) =
             k.area(),
             "addButton",
         ]);
+        const tutorial = k.add([
+            k.text("Click on plus to add platforms/obstacles, count increases on death", {
+                font: ASSETNAMES.mainfont,
+                size: 10,
+            }),
+            k.pos(52, 28),
+            k.opacity(0.5),
+            k.color(0, 0, 0),
+        ]);
         let menuOpen = false;
         let oddOrEven = true;
         addButton.onClick(() => {
+            tutorial.text=""
             menuOpen = !menuOpen;
             if (menuOpen && numberOfTools > 0) {
                 k.get("me").forEach((player) => {
