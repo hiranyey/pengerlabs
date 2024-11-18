@@ -213,6 +213,7 @@ const gameLoop = (k, appendObstacle, getObstacles, room, players, mySessionId) =
             "addButton",
         ]);
         let menuOpen = false;
+        let oddOrEven = true;
         addButton.onClick(() => {
             menuOpen = !menuOpen;
             if (menuOpen && numberOfTools > 0) {
@@ -221,6 +222,12 @@ const gameLoop = (k, appendObstacle, getObstacles, room, players, mySessionId) =
                 });
                 let items = [];
                 TOOLS.forEach(async (tool, i) => {
+                    if (oddOrEven && i % 2 == 0) {
+                        return;
+                    }
+                    if (!oddOrEven && i % 2 != 0) {
+                        return;
+                    }
                     const greybox = k.add([
                         k.rect(64, 64),
                         k.pos(k.width() / 2.5 + (i - 1) * 80, k.height() / 2),
@@ -280,6 +287,7 @@ const gameLoop = (k, appendObstacle, getObstacles, room, players, mySessionId) =
                                 k.get("me").forEach((player) => {
                                     player.use(k.body());
                                 });
+                                oddOrEven = !oddOrEven;
                                 menuOpen = false;
                                 room.send("addObstacle", { tool: tool, pos: k.mousePos() });
                                 u.cancel();
